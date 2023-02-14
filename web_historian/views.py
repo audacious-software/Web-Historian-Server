@@ -123,7 +123,7 @@ def historian_visualization_data(request, source_id, page): # pylint: disable=un
         filename = 'visualization.json'
 
     try:
-        with open(folder + '/' + filename) as data_file:
+        with open(folder + '/' + filename, encoding='utf-8') as data_file:
             return HttpResponse(data_file.read(), content_type='application/json')
     except IOError:
         pass
