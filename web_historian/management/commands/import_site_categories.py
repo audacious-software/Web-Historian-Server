@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     @handle_lock
     def handle(self, *args, **options):
-        request = requests.get(options['json_url'])
+        request = requests.get(options['json_url'], timeout=120)
 
         current_index = len(request.json()['children'])
 
