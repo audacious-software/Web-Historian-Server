@@ -7,11 +7,10 @@ import csv
 import datetime
 import gc
 import json
+import io
 import os
 import tempfile
 import traceback
-
-import StringIO
 
 from django.conf import settings
 from django.core import management
@@ -78,7 +77,7 @@ def compile_visualization(identifier, points_query, folder):
             path = folder + '/' + filename
 
             with codecs.open(path, 'w', 'utf-8') as outfile:
-                outfile.write(unicode(json.dumps(output, indent=2, ensure_ascii=False)))
+                outfile.write(json.dumps(output, indent=2, ensure_ascii=False))
 
             index += PAGE_SIZE
             page += 1
@@ -102,7 +101,7 @@ def compile_report(generator, sources, data_start=None, data_end=None, date_type
         #    sources.remove(ignore_source)
 
         try:
-            with open(filename, 'w') as outfile:
+            with open(filename, 'w', encoding='utf-8') as outfile:
                 writer = csv.writer(outfile, delimiter='\t')
 
                 writer.writerow(['Source', 'Generator', 'Generator Identifier', 'Created Timestamp', 'Created Date', 'Recorded Timestamp', 'Recorded Date', 'Visit ID', 'URL ID', 'Referrer ID', 'Domain', 'Protocol', 'URL', 'Title', 'Top Domain', 'Search Terms', 'Transition Type', 'Timestamp', 'Date'])
@@ -212,10 +211,11 @@ def compile_report(generator, sources, data_start=None, data_end=None, date_type
             traceback.print_exc()
 
         return filename
-    elif generator == 'pdk-app-event':
+
+    if generator == 'pdk-app-event':
         filename = tempfile.gettempdir() + '/pdk_' + generator + '.txt'
 
-        with open(filename, 'w') as outfile:
+        with open(filename, 'w', encoding='utf-8') as outfile:
             writer = csv.writer(outfile, delimiter='\t')
 
             writer.writerow([
@@ -296,10 +296,11 @@ def compile_report(generator, sources, data_start=None, data_end=None, date_type
                     outfile.flush()
 
         return filename
-    elif generator == 'web-historian-behavior-metadata':
+
+    if generator == 'web-historian-behavior-metadata':
         filename = tempfile.gettempdir() + '/pdk_' + generator + '.txt'
 
-        with open(filename, 'w') as outfile:
+        with open(filename, 'w', encoding='utf-8') as outfile:
             writer = csv.writer(outfile, delimiter='\t')
 
             writer.writerow([
@@ -349,7 +350,7 @@ def compile_report(generator, sources, data_start=None, data_end=None, date_type
                         properties = json.loads(point.properties)
 
                     for key in properties:
-                        if key != 'passive-data-metadata' and key != 'web-historian-server':
+                        if (key in ['passive-data-metadata', 'web-historian-server']) is False:
                             participant = properties[key]
 
                             if (key in seen) is False:
@@ -414,7 +415,7 @@ def load_backup(filename, content):
 
         bundle.save()
     else:
-        print '[historian.pdk_api.load_backup] Unknown file type: ' + filename
+        print('[historian.pdk_api.load_backup] Unknown file type: %s' % filename)
 
 def incremental_backup(parameters): # pylint: disable=too-many-locals, too-many-branches, too-many-statements
     to_transmit = []
@@ -444,8 +445,8 @@ def incremental_backup(parameters): # pylint: disable=too-many-locals, too-many-
         pass
 
     for app in dumpdata_apps:
-        print '[historian] Backing up ' + app + '...'
-        buf = StringIO.StringIO()
+        print('[historian] Backing up %s...' % app)
+        buf = io.StringIO()
         management.call_command('dumpdata', app, stdout=buf)
         buf.seek(0)
 
@@ -495,7 +496,7 @@ def incremental_backup(parameters): # pylint: disable=too-many-locals, too-many-
             while index < count:
                 filename = prefix + '_data_points_' + slice_date.isoformat() + '_' + str(increment_minutes) + 'min_' + str(index) + '_' + str(count) + '.pdk-bundle.bz2'
 
-                print '[historian] Backing up data points ' + str(index) + ' of ' + str(count) + ' [' + slice_date.isoformat() + ' / ' + str(increment_minutes) + ' min. slice]...'
+                print('[historian] Backing up data points %s of %s [%s / %s min. slice]...' % (index, count, slice_date.isoformat(), increment_minutes))
 
                 bundle = []
 
@@ -529,7 +530,7 @@ def incremental_backup(parameters): # pylint: disable=too-many-locals, too-many-
         while index < count:
             filename = prefix + '_data_points_' + str(index) + '_' + str(count) + '.pdk-bundle.bz2'
 
-            print '[historian] Backing up data points ' + str(index) + ' of ' + str(count) + '...'
+            print('[historian] Backing up data points %s of %s...' % (index, count))
 
             bundle = []
 
