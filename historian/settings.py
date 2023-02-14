@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'nagios_monitor',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -101,5 +101,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
-from local_settings import *
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SILENCED_SYSTEM_CHECKS = ['fields.W904', 'security.W004',]
+
+from .local_settings import *
