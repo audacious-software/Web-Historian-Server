@@ -2,14 +2,14 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'CHANGEME' # nosec
-DEBUG = True
+SECRET_KEY = 'CHANGEMECHANGEMECHANGEMECHANGEMECHANGEMECHANGEMECHANGEMECHANGEME' # nosec
+DEBUG = False
 
 ALLOWED_HOSTS = ['webhistorian.example.com']
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME':     'circle_test',
         'USER':     'root',
         'PASSWORD': '', # nosec
