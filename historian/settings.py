@@ -27,9 +27,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    'prettyjson',
     'web_historian',
     'passive_data_kit',
     'nagios_monitor',
+    'search_historian',
 ]
 
 MIDDLEWARE = [
